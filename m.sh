@@ -8,12 +8,7 @@ function mls {
     # check if there are no open sessions
     OPEN_SESSIONS=$(tmux ls 2>&1)
     echo $OPEN_SESSIONS | grep -q "no server running"
-    if [ $? -eq 0 ]; then
-        echo "No open sessions"
-    # otherwise, print all open sesssions
-    else
-        echo "Open sessions:"
-        echo "--------------"
+    if [ $? -ne 0 ]; then
         SESSIONS=$(tmux ls | awk '{print $1}')
         for SESSION in $SESSIONS; do
             NAME=$(echo $SESSION | sed s'/.$//')
@@ -62,10 +57,7 @@ function mattach {
         SESSIONS=$(tmux ls 2>&1)
         # if there are no sessions, stop
         echo $SESSIONS | grep -q "no server running"
-        if [ $? -eq 0 ]; then
-            echo "No open sessions"
-        # otherwise, attach to the first session found
-        else
+        if [ $? -ne 0 ]; then
             OPEN_SESSIONS=$(tmux ls 2>&1 | awk '{print $1}')
             FIRST_SESSION_UNFORMATTED=$(echo $OPEN_SESSIONS | awk '{print $1}')
             SESSION=$(echo $FIRST_SESSION_UNFORMATTED | sed s'/.$//')
@@ -85,23 +77,12 @@ function mstop {
     # Check if any sessions are open
     OPEN_SESSIONS=$(tmux ls 2>&1)
     echo $OPEN_SESSIONS | grep -q "no server running"
-    if [ $? -eq 0 ]; then
-        echo "No open sessions"
-    # otherwise, there are open sessions...
-    else
+    if [ $? -ne 0 ]; then
         # If no args given, display open sessions
         if [[ $# -eq 0 ]]; then
             echo "Usage: mstop <session-name>"
-            echo "Open sessions:"
-            echo "--------------"
-            SESSIONS=$(tmux ls | awk '{print $1}')
-            for SESSION in $SESSIONS; do
-                NAME=$(echo $SESSION | sed s'/.$//')
-                echo $NAME
-            done
         # otherwise, kill the specified session
         else
-            echo "Stopping: $1"
             tmux kill-session -t $1
         fi
     fi
@@ -114,16 +95,12 @@ function mkillall {
     # Check if any sessions are open
     OPEN_SESSIONS=$(tmux ls 2>&1)
     echo $OPEN_SESSIONS | grep -q "no server running"
-    if [ $? -eq 0 ]; then
-        echo "No open sessions"
-    # otherwise, there are open sessions...
-    else
+    if [ $? -ne 0 ]; then
         SESSIONS=$(tmux ls | awk '{print $1}')
         # kill all the sessions
         for SESSION in $SESSIONS; do
             NAME=$(echo $SESSION | sed s'/.$//')
             tmux kill-session -t $NAME
-            echo "Stopping: $NAME"
         done
     fi
 }
