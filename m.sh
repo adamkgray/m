@@ -78,7 +78,7 @@ function mstop {
     OPEN_SESSIONS=$(tmux ls 2>&1)
     echo $OPEN_SESSIONS | grep -q "no server running"
     if [ $? -ne 0 ]; then
-        # If no args given, display open sessions
+        # If no args given, display usage
         if [[ $# -eq 0 ]]; then
             echo "Usage: mstop <session-name>"
         # otherwise, kill the specified session
